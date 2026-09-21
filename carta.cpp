@@ -1,44 +1,29 @@
+#include "Carta.h"
 #include <iostream>
-#include <string>
-#include <vector>
-
 using namespace std;
 
-class Carta {
-private:
-    int numero;
-    string color;
+Carta::Carta() {
+    numero = -1;
+    color = "NINGUNA";
+}
 
-public:
-    Carta(int num, const string& col) {
-        numero = num;
-        color = col;
-    }
+Carta::Carta(int num, string col) {
+    numero = num;
+    color = col;
+}
 
-    int getNumero() const { return numero; }
-    string getColor() const { return color; }
+int Carta::getNumero() {
+    return numero;
+}
 
-    void mostrar() const {
-        cout << color << " " << numero << endl;
-    }
-};
+string Carta::getColor() {
+    return color;
+}
 
-int main() {
-    string colores[4] = {"Azul", "Rojo", "Amarillo", "Verde"};
-    vector<Carta> mazo;
-    mazo.reserve(40);
+bool Carta::esValida() {
+    return numero >= 0 && numero <= 9;
+}
 
-    for (const string& color : colores) {
-        for (int n = 0; n <= 9; n++) {
-            mazo.emplace_back(n, color);
-        }
-    }
-
-    cout << "Total: " << mazo.size() << " cartas" << endl;
-
-    for (const Carta& carta : mazo) {
-        carta.mostrar();
-    }
-
-    return 0;
+void Carta::mostrar() {
+    cout << color << " " << numero << endl;
 }
