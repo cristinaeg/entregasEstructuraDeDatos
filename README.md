@@ -1,2 +1,2 @@
-# entregasEstructuraDeDatos
+# Ecuipo chevere
 Me adueñe de esto. >:)
