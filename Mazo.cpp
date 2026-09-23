@@ -52,14 +52,4 @@ public:
         tope = 0;
     }
 
-    Carta tomarCarta() {
-        if (tope >= totalCartas) {
-            return Carta("ninguno", -1);
-        }
-
-        Carta carta = cartas[tope];
-        tope++;
-
-        return carta;
-    }
 };
