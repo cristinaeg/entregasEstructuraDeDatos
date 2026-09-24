@@ -1,37 +1,23 @@
+#include "Mesa.h"
 
-#include <iostream>
-#include <string>
-#include "Jugador.cpp"
-#include "Carta.cpp"
+Mesa::Mesa() {
+    cantidadSobreMesa = 0;[cite: 7]
+}
 
-using namespace std;
+void Mesa::limpiarMesa() {
+    cantidadSobreMesa = 0;   // Reiniciar la mesa
+}
 
-class Mesa {
-private:
-    Carta cartasEnMesa[10];      // cartas jugadas en la ronda
-    Jugador jugadoresEnMesa[10];  // El jugador que esta jugando
-    int cantidadSobreMesa;       // Cuantas cartas hay en la mesa
-
-public:
-    Mesa() {
-        cantidadSobreMesa = 0;
+void Mesa::recibirCarta(Jugador j, Carta c) {
+    if (cantidadSobreMesa < 10) {
+        jugadoresEnMesa[cantidadSobreMesa] = j;   // Guarda el jugador
+        cartasEnMesa[cantidadSobreMesa] = c;      // Guarda la carta
+        cantidadSobreMesa++;[cite: 7]
     }
+}
 
-    void limpiarMesa() {
-        cantidadSobreMesa = 0;   // Reiniciar la mesa
-    }
 
-    void recibirCarta(Jugador j, Carta c) {
-        if (cantidadSobreMesa < 10) {
-            jugadoresEnMesa[cantidadSobreMesa] = j;   // Guarda el jugador
-            cartasEnMesa[cantidadSobreMesa] = c;      // Guarda la carta
-            cantidadSobreMesa++;
-        }
-    }
-
-    // Devuelve el jugador ganador de la ronda segun la condicion
-    // condicion: 1 para el # mas bajo, 2 para el # mas alto
-    Jugador compararCartas(string colorBuscado, int condicion) {   
+Jugador Mesa::compararCartas(string colorBuscado, int condicion) {   
         int indiceGanador = 0;
         int numeroReferencia = cartasEnMesa[0].getNumero();
 
@@ -55,4 +41,4 @@ public:
 
         return jugadoresEnMesa[indiceGanador];   // Retorna al jugador ganador
     }
-};
+
