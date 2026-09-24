@@ -1,55 +1,41 @@
-#pragma once
+#include "Mazo.h"
+#include <random>
+#include <utility>
 
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <string>
-#include "Carta.cpp"
+Mazo::Mazo() {
+    totalCartas = 40;
+    tope = 0;
+    cartas = new Carta*[totalCartas];
 
-using namespace std;
-
-class Mazo {
-private:
-    Carta* cartas;
-    int totalCartas;
-    int tope;
-
-public:
-    Mazo() {
-        totalCartas = 40;
-        tope = 0;
-
-        cartas = new Carta[40];
-
-        string colores[4] = {
-            "rojo",
-            "azul",
-            "verde",
-            "amarillo"
-        };
-
-        int posicion = 0;
-
-        for (int i = 0; i < 4; i++) {
-            for (int numero = 1; numero <= 10; numero++) {
-                cartas[posicion] = Carta(colores[i], numero);
-                posicion++;
-            }
+    int k = 0;
+    for (int color = 0; color < 4; color++) {
+        for (int num = 0; num < 10; num++) {
+            cartas[k++] = new Carta(color, num);
         }
-
-        srand(time(NULL));
     }
+}
 
-    void barajar() {
-        for (int i = totalCartas - 1; i > 0; i--) {
-            int j = rand() % (i + 1);
-
-            Carta auxiliar = cartas[i];
-            cartas[i] = cartas[j];
-            cartas[j] = auxiliar;
-        }
-
-        tope = 0;
+Mazo::~Mazo() {
+    for (int i = 0; i < totalCartas; i++) {
+        delete cartas[i];
     }
+    delete[] cartas;
+}
 
-};
+void Mazo::barajar() {
+    static std::mt19937 gen(std::random_device{}());
+
+    for (int i = totalCartas - 1; i > 0; i--) {
+        std::uniform_int_distribution<int> dist(0, i);
+        int j = dist(gen);
+        std::swap(cartas[i], cartas[j]);
+    }
+    tope = 0;
+}
+
+Carta* Mazo::sacarCarta() {
+    if (tope >= totalCartas) {
+        return nullptr;
+    }
+    return cartas[tope++];
+}
