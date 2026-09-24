@@ -32,10 +32,3 @@ void Mazo::barajar() {
     }
     tope = 0;
 }
-
-Carta* Mazo::sacarCarta() {
-    if (tope >= totalCartas) {
-        return nullptr;
-    }
-    return cartas[tope++];
-}
