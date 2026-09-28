@@ -1,90 +1,56 @@
-#pragma once
+#include "Mesa.h"
 
-#include <iostream>
-#include <string>
-#include <climits>
-#include "Carta.cpp"
-#include "Jugador.cpp"
+Mesa::Mesa(int numJugadores) {
+    if (numJugadores > 10) numJugadores = 10;
+    if (numJugadores < 1)  numJugadores = 1;
 
-using namespace std;
-
-class Mesa {
-private:
-    Carta* cartasEnMesa;
-    Jugador* jugadoresEnMesa;
-    int capacidadRonda;
-    int cantidadSobreMesa;
-
-public:
-    Mesa() {
-        capacidadRonda = 10;
-        cantidadSobreMesa = 0;
-
-        cartasEnMesa = new Carta[10];
-        jugadoresEnMesa = new Jugador[10];
+    cartasEnMesa = new Carta*[numJugadores];
+    for (int i = 0; i < numJugadores; i++) {
+        cartasEnMesa[i] = nullptr;
     }
-
-    void recibirCarta(Jugador j, Carta c) {
-        if (cantidadSobreMesa >= capacidadRonda) {
-            cout << "La mesa ya esta llena." << endl;
-            return;
-        }
-
-        jugadoresEnMesa[cantidadSobreMesa] = j;
-        cartasEnMesa[cantidadSobreMesa] = c;
-
-        cantidadSobreMesa++;
+    for (int i = 0; i < 10; i++) {
+        jugadoresEnMesa[i] = nullptr;
     }
+    cantidadSobreMesa = 0;
+}
 
-    Jugador compararCartas(string color, bool condicion) {
-        if (cantidadSobreMesa == 0) {
-            return Jugador(-1);
-        }
+Mesa::~Mesa() {
+    delete[] cartasEnMesa;
+}
 
-        int mejorNumero;
-        int posicionGanador = -1;
+void Mesa::recibirCarta(Jugador* j, Carta* c) {
+    if (cantidadSobreMesa >= 10) return;
 
-        if (condicion) {
-            // TRUE = buscar la carta mas alta
-            mejorNumero = INT_MIN;
-        }
-        else {
-            // FALSE = buscar la carta mas baja
-            mejorNumero = INT_MAX;
-        }
+    cartasEnMesa[cantidadSobreMesa] = c;
+    jugadoresEnMesa[cantidadSobreMesa] = j;
+    cantidadSobreMesa++;
+}
 
-        for (int i = 0; i < cantidadSobreMesa; i++) {
+Jugador* Mesa::compararCartas(std::string color, bool condicion) {
+    int mejor = -1; 
 
-            if (cartasEnMesa[i].getColor() == color) {
+    for (int i = 0; i < cantidadSobreMesa; i++) {
+        if (cartasEnMesa[i]->getColor() != color) continue;
 
-                int numeroActual = cartasEnMesa[i].getNumero();
-
-                if (condicion) {
-                    // Mayor
-                    if (numeroActual > mejorNumero) {
-                        mejorNumero = numeroActual;
-                        posicionGanador = i;
-                    }
-                }
-                else {
-                    // Menor
-                    if (numeroActual < mejorNumero) {
-                        mejorNumero = numeroActual;
-                        posicionGanador = i;
-                    }
-                }
+        if (mejor == -1) {
+            mejor = i;
+        } else {
+            int actual = cartasEnMesa[i]->getNumero();
+            int best   = cartasEnMesa[mejor]->getNumero();
+            if ((condicion && actual > best) || (!condicion && actual < best)) {
+                mejor = i;
             }
         }
-
-        if (posicionGanador == -1) {
-            cout << "No hay cartas del color " << color << " sobre la mesa." << endl;
-            return Jugador(-1);
-        }
-
-        return jugadoresEnMesa[posicionGanador];
     }
 
-    void limpiarMesa() {
-        cantidadSobreMesa = 0;
+    if (mejor == -1) return nullptr;
+    return jugadoresEnMesa[mejor];
+}
+
+void Mesa::limpiarMesa() {
+    for (int i = 0; i < cantidadSobreMesa; i++) {
+        cartasEnMesa[i] = nullptr;
+        jugadoresEnMesa[i] = nullptr;
     }
-};
+    cantidadSobreMesa = 0;
+}
