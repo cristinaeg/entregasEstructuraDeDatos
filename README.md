@@ -1,5 +1,9 @@
 # entregasEstructuraDeDatos
 
+#**Diagrama**
+
+<img width="1252" height="913" alt="UML_juego_cartas_corregido drawio" src="https://github.com/user-attachments/assets/22eca680-5a94-4304-922d-732ff3be5d5c" />
+
 # Juego de Cartas: Color, Alto o Bajo 🃏
 
 Este repositorio contiene la implementación de un juego de cartas multijugador desarrollado como parte de las entregas de la asignatura de **Estructuras de datos**. El juego simula una partida estratégica donde los jugadores compiten en rondas utilizando cartas de colores y números, basándose en condiciones cambiantes dictadas por el jugador inicial.
