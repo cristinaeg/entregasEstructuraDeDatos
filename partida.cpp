@@ -1,5 +1,7 @@
 #include "Partida.h"
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include <fstream>
 
 using namespace std;
@@ -19,7 +21,33 @@ Partida::Partida(int numJugadores) {
         jugadores[i] = Jugador(i + 1);   // para el ID de los jugadores xd
     }
 }
+void Partida::registrarJugadores() {
+    cout << "\n--- REGISTRO DE JUGADORES ---" << endl;
+    for (int i = 0; i < cantidadJugadores; i++) {
+        cout << "Jugador " << (i + 1) << " registrado con ID: " << jugadores[i].getId() << endl;
+    }
+}
+void Partida::sortearOrdenInicio() {
+    srand(time(NULL));
+    cout << "\n--- SORTEO DE TURNO INICIAL (LANZAMIENTO DE DADO) ---" << endl;
 
+    int mayorDado = -1;
+    int liderInicial = 0;
+
+    for (int i = 0; i < cantidadJugadores; i++) {
+        int dado = (rand() % 6) + 1;
+        cout << "Jugador " << jugadores[i].getId() << " tiro el dado y saco: " << dado << endl;
+
+        if (dado > mayorDado) {
+            mayorDado = dado;
+            liderInicial = i;
+        }
+    }
+
+    turnoActual = liderInicial;
+    cout << "\n>>> ¡El Jugador " << jugadores[turnoActual].getId() 
+         << " saco el dado mas alto (" << mayorDado << ") y comenzara liderando! <<<" << endl;
+}
 void Partida::iniciar() {               
     mazo.barajar();             
         
@@ -40,54 +68,66 @@ void Partida::jugarRonda() {
     int condicion;
 
     //Aqui empieza la persona de turno a analizar que cartas y dar al condision de como es
-    cout << "\nJugador " << jugadores[turnoActual].getId() << ", elige carta (0-3): ";
+    cout << "\n------------------------------------------" << endl;
+    cout << "TURNO LIDER - Jugador " << jugadores[turnoActual].getId() << endl;
+    jugadores[turnoActual].mostrarMano();
+    cout << "Elige el indice de la carta a jugar (0 a " << (jugadores[turnoActual].getCantMano() - 1) << "): ";
     cin >> cartaSeleccionada;
 
     Carta cLider = jugadores[turnoActual].jugarCarta(cartaSeleccionada);  
     mesa.recibirCarta(jugadores[turnoActual], cLider);                     
 
-    cout << "Ingresa el color objetivo: ";
+    cout << "Ingresa el color objetivo a evaluar (Rojo, Azul, Verde, Amarillo): ";
     cin >> colorObjetivo;
-    cout << "Condicion (1: Mas bajo, 2: Mas alto): ";
+    cout << "Ingresa condicion (1: Numero mas BAJO, 2: Numero mas ALTO): ";
     cin >> condicion;
 
-    //El resto de gentes tira las cartas
     for (int i = 0; i < cantidadJugadores; i++) {
-        if (i != turnoActual) {
-            cout << "Jugador " << jugadores[i].getId() << ", elige carta a tirar: ";
+        int idx = (turnoActual + i) % cantidadJugadores;
+        
+        if (idx != turnoActual) {
+            cout << "\nJugador " << jugadores[idx].getId() << endl;
+            jugadores[idx].mostrarMano();
+            cout << "Elige el indice de la carta a jugar: ";
             cin >> cartaSeleccionada;
-            Carta c = jugadores[i].jugarCarta(cartaSeleccionada);         
-            mesa.recibirCarta(jugadores[i], c);                            
+            
+            Carta c = jugadores[idx].jugarCarta(cartaSeleccionada);         
+            mesa.recibirCarta(jugadores[idx], c);                            
         }
     }
 
-    //Esto dice que en es el ganador de la RONDA NO EL DEFINITVO
     Jugador ganador = mesa.compararCartas(colorObjetivo, condicion);       
-    cout << "¡El ganador de la ronda es el Jugador " << ganador.getId() << "!\n";
+    cout << "\n>>> ¡El ganador de la ronda es el Jugador " << ganador.getId() << "! <<<" << endl;
 
-    //esto busca que jugar se gano esas carticas para no andar abudineando
     for (int i = 0; i < cantidadJugadores; i++) {
         if (jugadores[i].getId() == ganador.getId()) {
             jugadores[i].sumarGanadas(cantidadJugadores);                  
+            turnoActual = i;
         }
     }
 
     rondaActual++;
 }
+Jugador Partida::ganadorFinal() {
+    int maxPuntos = -1;
+    int indiceGanador = 0;
 
+    for (int i = 0; i < cantidadJugadores; i++) {
+        if (jugadores[i].getCartasGanadas() > maxPuntos) {
+            maxPuntos = jugadores[i].getCartasGanadas();
+            indiceGanador = i;
+        }
+    }
+    return jugadores[indiceGanador];
+}
 // -------------------------------------------------------------------
 // ESCRIBIR Y LEER ARCHIVO
 // -------------------------------------------------------------------
 
 bool Partida::guardarPartida(string ruta) {                                         
     ofstream archivo(ruta.c_str(), ios::binary);                           
+    if (!archivo) return false;
 
-    if (!archivo) {
-        cout << "Error al crear/abrir el archivo para guardar." << endl;    
-        return false;
-    }
-
-    // llenar los datos
     DatosPartida datos;
     datos.cantidadJugadores = cantidadJugadores;
     datos.turnoActual = turnoActual;
@@ -97,24 +137,17 @@ bool Partida::guardarPartida(string ruta) {
         datos.puntosJugadores[i] = jugadores[i].getCartasGanadas();
     }
 
-    // Guardar datos en bloque
     archivo.write((char*)&datos, sizeof(DatosPartida));                    
-
     archivo.close();                                                       
     return true;
 }
 
 bool Partida::cargarPartida(string ruta) {                                          
     ifstream lectura(ruta.c_str(), ios::binary);                           
-
-    if (!lectura) {
-        cout << "Error al abrir el archivo cargado." << endl;              
-        return false;
-    }
+    if (!lectura) return false;
 
     DatosPartida datos;
 
-    // leer archivo
     if (lectura.read((char*)&datos, sizeof(DatosPartida))) {               
         cantidadJugadores = datos.cantidadJugadores;
         turnoActual = datos.turnoActual;
