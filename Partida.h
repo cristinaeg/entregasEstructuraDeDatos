@@ -12,7 +12,10 @@ struct DatosPartida {
     int cantidadJugadores;    
     int turnoActual;          
     int rondaActual;
-    int puntosJugadores[10];  // Cartas acumuladas
+    int puntosJugadores[10];
+    int cantMano[10];
+    int numeroCarta[10][4];
+    char colorCarta[10][4][10];
 };
 
 class Partida {
@@ -32,6 +35,7 @@ public:
     void iniciar();
     void jugarRonda();
     Jugador ganadorFinal();
+    int getRondaActual();
     bool guardarPartida(string ruta);
     bool cargarPartida(string ruta);
 };
