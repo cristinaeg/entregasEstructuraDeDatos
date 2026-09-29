@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+#include <cstring>
 
 using namespace std;
 
@@ -73,14 +74,33 @@ void Partida::jugarRonda() {
     jugadores[turnoActual].mostrarMano();
     cout << "Elige el indice de la carta a jugar (0 a " << (jugadores[turnoActual].getCantMano() - 1) << "): ";
     cin >> cartaSeleccionada;
+    while (cartaSeleccionada < 0 || cartaSeleccionada >= jugadores[turnoActual].getCantMano()) {
+        cout << "Indice invalido, intenta de nuevo: ";
+        cin >> cartaSeleccionada;
+    }
 
     Carta cLider = jugadores[turnoActual].jugarCarta(cartaSeleccionada);  
     mesa.recibirCarta(jugadores[turnoActual], cLider);                     
 
-    cout << "Ingresa el color objetivo a evaluar (Rojo, Azul, Verde, Amarillo): ";
-    cin >> colorObjetivo;
+    // El color se pide con un numero para evitar errores de escritura (rojo vs Rojo)
+    int opcionColor;
+    cout << "Color objetivo (1: Azul, 2: Rojo, 3: Amarillo, 4: Verde): ";
+    cin >> opcionColor;
+    while (opcionColor < 1 || opcionColor > 4) {
+        cout << "Opcion invalida, intenta de nuevo: ";
+        cin >> opcionColor;
+    }
+    if (opcionColor == 1) colorObjetivo = "Azul";
+    if (opcionColor == 2) colorObjetivo = "Rojo";
+    if (opcionColor == 3) colorObjetivo = "Amarillo";
+    if (opcionColor == 4) colorObjetivo = "Verde";
+
     cout << "Ingresa condicion (1: Numero mas BAJO, 2: Numero mas ALTO): ";
     cin >> condicion;
+    while (condicion != 1 && condicion != 2) {
+        cout << "Condicion invalida, escribe 1 o 2: ";
+        cin >> condicion;
+    }
 
     for (int i = 0; i < cantidadJugadores; i++) {
         int idx = (turnoActual + i) % cantidadJugadores;
@@ -90,6 +110,10 @@ void Partida::jugarRonda() {
             jugadores[idx].mostrarMano();
             cout << "Elige el indice de la carta a jugar: ";
             cin >> cartaSeleccionada;
+            while (cartaSeleccionada < 0 || cartaSeleccionada >= jugadores[idx].getCantMano()) {
+                cout << "Indice invalido, intenta de nuevo: ";
+                cin >> cartaSeleccionada;
+            }
             
             Carta c = jugadores[idx].jugarCarta(cartaSeleccionada);         
             mesa.recibirCarta(jugadores[idx], c);                            
@@ -97,6 +121,8 @@ void Partida::jugarRonda() {
     }
 
     Jugador ganador = mesa.compararCartas(colorObjetivo, condicion);       
+    cout << "\nSe voltean las cartas... (color: " << colorObjetivo
+         << ", " << (condicion == 1 ? "mas BAJO" : "mas ALTO") << ")" << endl;
     cout << "\n>>> ¡El ganador de la ronda es el Jugador " << ganador.getId() << "! <<<" << endl;
 
     for (int i = 0; i < cantidadJugadores; i++) {
@@ -120,6 +146,9 @@ Jugador Partida::ganadorFinal() {
     }
     return jugadores[indiceGanador];
 }
+int Partida::getRondaActual() {
+    return rondaActual;
+}
 // -------------------------------------------------------------------
 // ESCRIBIR Y LEER ARCHIVO
 // -------------------------------------------------------------------
@@ -135,6 +164,14 @@ bool Partida::guardarPartida(string ruta) {
 
     for (int i = 0; i < cantidadJugadores; i++) {
         datos.puntosJugadores[i] = jugadores[i].getCartasGanadas();
+        datos.cantMano[i] = jugadores[i].getCantMano();
+
+        // Guardar cada carta que el jugador todavia tiene en la mano
+        for (int k = 0; k < datos.cantMano[i]; k++) {
+            Carta c = jugadores[i].getCartaMano(k);
+            datos.numeroCarta[i][k] = c.getNumero();
+            strcpy(datos.colorCarta[i][k], c.getColor().c_str());
+        }
     }
 
     archivo.write((char*)&datos, sizeof(DatosPartida));                    
@@ -156,6 +193,12 @@ bool Partida::cargarPartida(string ruta) {
         for (int i = 0; i < cantidadJugadores; i++) {
             jugadores[i] = Jugador(i + 1);
             jugadores[i].sumarGanadas(datos.puntosJugadores[i]);
+
+            // Devolverle a cada jugador las cartas que tenia en la mano
+            for (int k = 0; k < datos.cantMano[i]; k++) {
+                Carta c(datos.numeroCarta[i][k], string(datos.colorCarta[i][k]));
+                jugadores[i].agregarCartaMano(c);
+            }
         }
         lectura.close();                                                  
         return true;
