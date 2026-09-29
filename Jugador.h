@@ -24,6 +24,7 @@ public:
     int getCantMano();
     int getCartasGanadas();
     bool tieneCartas();
+    Carta getCartaMano(int index);
     void mostrarMano();
 };
 
