@@ -5,15 +5,16 @@
 
 class Mazo {
 private:
-    Carta** cartas;
+    Carta cartas[40];   // arreglo fijo con las 40 cartas
     int totalCartas;
-    int tope;
+    int tope;           // indice de la siguiente carta a repartir
 
 public:
     Mazo();
-    ~Mazo();
 
     void barajar();
+    Carta tomarCarta();
 };
 
 #endif
+
