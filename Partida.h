@@ -27,8 +27,11 @@ private:
 public:
     Partida();
     Partida(int numJugadores);
+    void registrarJugadores();
+    void sortearOrdenInicio();
     void iniciar();
     void jugarRonda();
+    Jugador ganadorFinal();
     bool guardarPartida(string ruta);
     bool cargarPartida(string ruta);
 };
