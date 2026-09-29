@@ -158,6 +158,7 @@ bool Partida::guardarPartida(string ruta) {
     if (!archivo) return false;
 
     DatosPartida datos;
+    memset(&datos, 0, sizeof(DatosPartida)); 
     datos.cantidadJugadores = cantidadJugadores;
     datos.turnoActual = turnoActual;
     datos.rondaActual = rondaActual;
