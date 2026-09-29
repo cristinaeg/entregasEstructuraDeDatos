@@ -1,34 +1,36 @@
 #include "Mazo.h"
-#include <random>
-#include <utility>
+#include <cstdlib>
 
 Mazo::Mazo() {
     totalCartas = 40;
     tope = 0;
-    cartas = new Carta*[totalCartas];
+
+    string colores[4] = {"Azul", "Rojo", "Amarillo", "Verde"};
 
     int k = 0;
-    for (int color = 0; color < 4; color++) {
+    for (int c = 0; c < 4; c++) {
         for (int num = 0; num < 10; num++) {
-            cartas[k++] = new Carta(color, num);
+            cartas[k] = Carta(num, colores[c]);
+            k++;
         }
     }
 }
 
-Mazo::~Mazo() {
-    for (int i = 0; i < totalCartas; i++) {
-        delete cartas[i];
-    }
-    delete[] cartas;
-}
-
 void Mazo::barajar() {
-    static std::mt19937 gen(std::random_device{}());
-
     for (int i = totalCartas - 1; i > 0; i--) {
-        std::uniform_int_distribution<int> dist(0, i);
-        int j = dist(gen);
-        std::swap(cartas[i], cartas[j]);
+        int j = rand() % (i + 1);
+        Carta temp = cartas[i];
+        cartas[i] = cartas[j];
+        cartas[j] = temp;
     }
     tope = 0;
+}
+
+Carta Mazo::tomarCarta() {
+    if (tope >= totalCartas) {
+        return Carta();
+    }
+    Carta c = cartas[tope];
+    tope++;
+    return c;
 }
