@@ -34,7 +34,6 @@ Reglas de la interfaz:
 | `Servidor.h` | Declaración de `iniciar_servidor()` |
 | `servidor.i` | Interfaz SWIG que genera el módulo `servidor` |
 | `interfaz.py` | Interfaz gráfica en Python (Tkinter) |
-| `entrega 1/` | Entrega anterior: juego de cartas |
 
 ## Estructuras de datos
 
