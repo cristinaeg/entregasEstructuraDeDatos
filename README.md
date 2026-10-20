@@ -2,7 +2,7 @@
 
 ## Diagrama
 
----- pending----
+<img width="1233" height="726" alt="DiagramaParqueadero drawio" src="https://github.com/user-attachments/assets/f0fbd2eb-a38d-4634-af17-fe4cd8b9988f" />
 
 ## Parqueadero: cliente, servidor e interfaz
 
