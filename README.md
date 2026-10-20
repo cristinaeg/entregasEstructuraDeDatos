@@ -2,7 +2,7 @@
 
 ## Diagrama
 
-![Diagrama UML Parqueadero](DiagramaParqueadero.png)
+---- pending----
 
 ## Parqueadero: cliente, servidor e interfaz
 
