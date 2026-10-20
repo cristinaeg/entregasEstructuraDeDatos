@@ -34,7 +34,7 @@ int main() {
     serv_addr.sin_port = htons(PORT);
 
     // Convertir dirección IP
-    serv_addr.sin_addr.s_addr = inet_addr("10.2.10.200");
+    serv_addr.sin_addr.s_addr = inet_addr("10.2.15.159");
 	if (serv_addr.sin_addr.s_addr == INADDR_NONE) {
 	    std::cerr << "Dirección inválida o no soportada" << std::endl;
 	    closesocket(sock);
